@@ -20,8 +20,7 @@ function App() {
       const gistContentUrl =
         gistUrl ||
         "https://gist.githubusercontent.com/mestachs/e1819a776ca1618b981d1de082a550aa/raw/cbfedc3156a166eae0eb21dcf99aaf5b6c7d9a70";
-      /*const gistContentUrl =
-        "https://gist.githubusercontent.com/mestachs/e1819a776ca1618b981d1de082a550aa/raw/a3be81a9913e06a108c12d432e1b14c674d0fe13";*/
+
       const params = await fetch(gistContentUrl + "/params.json").then((r) =>
         r.json()
       );
@@ -40,10 +39,12 @@ function App() {
   const markdown = Mustache.render(markdownTemplate, markdownParams);
   return (
     <div className="App">
-      <div id="edit" style={{ display: "flex" }}>
-        <div>
+      <div id="edit" className="main">
+        <div className="noprint">
           <div>
-            <p>Parameters</p>
+            <p>
+              <b>Parameters</b>
+            </p>
             <textarea
               value={markdownParamsText}
               onChange={(event) => {
@@ -52,12 +53,14 @@ function App() {
                   setMarkdownParams(JSON.parse(event.target.value));
                 } catch (error) {}
               }}
-              cols="70"
-              rows="25"
+              cols="120"
+              rows="20"
             ></textarea>
           </div>
           <div>
-            <p>Markdown</p>
+            <p>
+              <b>Markdown template</b>
+            </p>
             <textarea
               value={markdownTemplate}
               onChange={(event) => {
@@ -70,12 +73,24 @@ function App() {
           </div>
         </div>
         <div style={{ marginLeft: "20px" }}>
-          <p>Preview</p>
-          <ReactMarkdown remarkPlugins={[gfm]} children={markdown} />
+          <p className="noprint">
+            <b>Preview</b>
+            <button
+              style={{ marginLeft: "20px" }}
+              onClick={() => window.print()}
+            >
+              Print
+            </button>
+          </p>
+          <div className="checklist">
+            <ReactMarkdown remarkPlugins={[gfm]} children={markdown} />
+          </div>
         </div>
       </div>
-      <div>
-        <p>gist to start the procedure</p>
+      <div className="noprint">
+        <p>
+          <b>Instantiated markdown, create a gist and start the procedure</b>
+        </p>
         <textarea value={markdown} cols="200" rows="50"></textarea>
       </div>
     </div>

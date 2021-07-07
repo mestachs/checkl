@@ -1,3 +1,67 @@
 body {
   margin: 10px
 }
+
+h1 {
+  background: rgb(68, 64, 64);
+  color: white;
+  margin-left: 10px;
+  padding: 10px;
+}
+
+
+h2 {
+  background:rgb(68, 64, 64);
+  color: white;
+  margin-left: 30px;
+  padding: 10px;
+}
+
+
+body {
+  counter-reset: h1counter;
+}
+h1 {
+  counter-reset: h2counter;
+}
+h1:before {
+  content: counter(h1counter) ".\0000a0\0000a0";
+  counter-increment: h1counter;
+}
+h2:before {
+  content: counter(h1counter) "." counter(h2counter) ".\0000a0\0000a0";
+  counter-increment: h2counter;
+}
+
+.checklist {
+  max-height: 87vh;
+  overflow-y: scroll;
+  width: 800px 
+}
+.main {
+  display: flex;
+}
+
+h1,
+h1 ~ *,
+h2 ~ h1,
+h2 ~ h1 ~ *,
+h3 ~ h1,
+h3 ~ h1 ~ * {
+    margin-left: 0px;
+}
+
+
+h2,
+h2 ~ *,
+h1 ~ h2,
+h1 ~ h2 ~ *:not(h1):not(h3) {
+    margin-left: 40px;
+}
+
+h3,
+h3 ~ *,
+h1 ~ h3,
+h1 ~ h3 ~ *:not(h1):not(h2) {
+    margin-left: 80px;
+}
