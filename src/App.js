@@ -89,7 +89,7 @@ function App() {
       </div>
       <div className="noprint">
         <p>
-          <b>Instantiated markdown, create a gist and start the procedure</b>
+          <b>Instantiated markdown, create a <a href="https://gist.github.com/" target="_blank" rel="noreferrer">gist</a> and start the procedure</b>
         </p>
         <textarea value={markdown} cols="200" rows="50"></textarea>
       </div>
