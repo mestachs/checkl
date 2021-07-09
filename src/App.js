@@ -7,11 +7,14 @@ import { useEffect, useState } from "react";
 function App() {
   const [mode, setMode] = useState("rw");
   const [markdownParams, setMarkdownParams] = useState({ demo: "Stéphan" });
+  const [markdownParamsError, setMarkdownParamsError] = useState(undefined);
   const [markdownParamsText, setMarkdownParamsText] = useState(
-    '{ demo: "Stéphan" }'
+    '{ "demo": "Stéphan" }'
   );
 
+  const [markdownError, setMarkdownError] = useState(undefined);
   const [markdownTemplate, setMarkdownTemplate] = useState("{{demo}}");
+  const [renderedMarkdown, setRenderedMarkdown] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -65,8 +68,15 @@ function App() {
 
     loadData();
   }, []);
+  useEffect(() => {
+    try {
+      setRenderedMarkdown(Mustache.render(markdownTemplate, markdownParams));
+      setMarkdownError("");
+    } catch (error) {
+      setMarkdownError(error.message);
+    }
+  }, [markdownTemplate, markdownParamsText, markdownParams]);
 
-  const markdown = Mustache.render(markdownTemplate, markdownParams);
   return (
     <div className="App">
       <div id="edit" className="main">
@@ -74,7 +84,8 @@ function App() {
           <div className="noprint">
             <div>
               <p>
-                <b>Parameters</b>
+                <b>Parameters</b>{" "}
+                <span style={{ color: "red" }}>{markdownParamsError}</span>
               </p>
               <textarea
                 value={markdownParamsText}
@@ -82,7 +93,10 @@ function App() {
                   setMarkdownParamsText(event.target.value);
                   try {
                     setMarkdownParams(JSON.parse(event.target.value));
-                  } catch (error) {}
+                    setMarkdownParamsError(undefined);
+                  } catch (error) {
+                    setMarkdownParamsError(error.message);
+                  }
                 }}
                 cols="120"
                 rows="10"
@@ -90,12 +104,12 @@ function App() {
             </div>
             <div>
               <p>
-                <b>Markdown template</b>
+                <b>Markdown template</b>{" "}
+                <span style={{ color: "red" }}>{markdownError}</span>
               </p>
               <textarea
                 value={markdownTemplate}
                 onChange={(event) => {
-                  debugger;
                   setMarkdownTemplate(event.target.value);
                 }}
                 cols="120"
@@ -122,7 +136,7 @@ function App() {
             </button>
           </p>
           <div className={"checklist " + mode}>
-            <ReactMarkdown remarkPlugins={[gfm]} children={markdown} />
+            <ReactMarkdown remarkPlugins={[gfm]} children={renderedMarkdown} />
           </div>
         </div>
       </div>
@@ -141,7 +155,7 @@ function App() {
               and start the procedure
             </b>
           </p>
-          <textarea value={markdown} cols="200" rows="50"></textarea>
+          <textarea value={renderedMarkdown} cols="200" rows="50"></textarea>
         </div>
       )}
     </div>
