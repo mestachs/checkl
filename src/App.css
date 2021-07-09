@@ -1,5 +1,6 @@
 body {
-  margin: 10px
+  margin: 10px;
+  background-color: rgb(255,255,240)
 }
 
 h1 {
@@ -9,14 +10,12 @@ h1 {
   padding: 10px;
 }
 
-
 h2 {
-  background:rgb(68, 64, 64);
+  background: rgb(68, 64, 64);
   color: white;
   margin-left: 30px;
   padding: 10px;
 }
-
 
 body {
   counter-reset: h1counter;
@@ -33,11 +32,21 @@ h2:before {
   counter-increment: h2counter;
 }
 
-.checklist {
+.checklist.rw {
   max-height: 87vh;
   overflow-y: scroll;
-  width: 800px 
+  margin: auto;
+  padding-right: 20px;
+  width: 100%;
 }
+
+.checklist.r {
+  overflow: visible;  
+  height: auto;
+  width: 80%;
+  margin: auto
+}
+
 .main {
   display: flex;
 }
@@ -48,20 +57,43 @@ h2 ~ h1,
 h2 ~ h1 ~ *,
 h3 ~ h1,
 h3 ~ h1 ~ * {
-    margin-left: 0px;
+  margin-left: 0px;
 }
-
 
 h2,
 h2 ~ *,
 h1 ~ h2,
 h1 ~ h2 ~ *:not(h1):not(h3) {
-    margin-left: 40px;
+  margin-left: 40px;
 }
 
 h3,
 h3 ~ *,
 h1 ~ h3,
 h1 ~ h3 ~ *:not(h1):not(h2) {
-    margin-left: 80px;
+  margin-left: 80px;
+}
+
+pre {
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-color: rgb(27, 27, 27);
+  background-image: none;
+  background-origin: padding-box;
+  background-position-x: 0%;
+  background-position-y: 0%;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 10px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  box-sizing: border-box;
+  clear: both;
+  color: rgb(80, 238, 119);
+  display: block;
+  font-family: "Operator Mono SSm A", "Operator Mono SSm B", "Source Code Pro",
+    Menlo, Consolas, Monaco, monospace;
+  tab-size: 2;
+  white-space: pre;
+  word-break: normal;
 }

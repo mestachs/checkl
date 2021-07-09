@@ -5,6 +5,7 @@ import gfm from "remark-gfm";
 import { useEffect, useState } from "react";
 
 function App() {
+  const [mode, setMode] = useState("rw");
   const [markdownParams, setMarkdownParams] = useState({ demo: "Stéphan" });
   const [markdownParamsText, setMarkdownParamsText] = useState(
     '{ demo: "Stéphan" }'
@@ -15,22 +16,51 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const gistUrl = urlParams.get("gist");
+      const markdownUrl = urlParams.get("markdown");
+      const gistUrl =
+        urlParams.get("gist") ||
+        "https://gist.github.com/mestachs/e1819a776ca1618b981d1de082a550aa";
 
-      const gistContentUrl =
-        gistUrl ||
-        "https://gist.githubusercontent.com/mestachs/e1819a776ca1618b981d1de082a550aa/raw/cbfedc3156a166eae0eb21dcf99aaf5b6c7d9a70";
+      setMode(urlParams.get("mode") || "rw");
 
-      const params = await fetch(gistContentUrl + "/params.json").then((r) =>
-        r.json()
-      );
-      const textmd = await fetch(gistContentUrl + "/tasklist.md").then((r) =>
-        r.text()
-      );
+      if (markdownUrl) {
+        let contentUrl = markdownUrl;
+        if (markdownUrl.startsWith("https://github.com/")) {
+          contentUrl =
+            "https://raw.githubusercontent.com/" +
+            markdownUrl.split("/").slice(3, 5).join("/") +
+            "/" +
+            markdownUrl.split("/").slice(6).join("/");
+          debugger;
+        }
 
-      setMarkdownParamsText(JSON.stringify(params, undefined, 2));
-      setMarkdownParams(params);
-      setMarkdownTemplate(textmd);
+        const markdownContent = await fetch(contentUrl).then((response) =>
+          response.text()
+        );
+        setMarkdownTemplate(markdownContent);
+      } else if (gistUrl) {
+        let gistId = gistUrl;
+        if (
+          gistUrl.startsWith("https://gist.github.com") ||
+          gistUrl.startsWith("https://gist.githubusercontent.com")
+        ) {
+          gistId = gistUrl.split("/")[4];
+        }
+
+        const gist = await fetch(`https://api.github.com/gists/${gistId}`).then(
+          (response) => response.json()
+        );
+
+        const params = gist.files["params.json"] || { no: "params" };
+        const checklist =
+          gist.files["tasklist.md"] || gist.files["checklist.md"];
+
+        setMarkdownParamsText(
+          JSON.stringify(JSON.parse(params.content), undefined, 2)
+        );
+        setMarkdownParams(JSON.parse(params.content));
+        setMarkdownTemplate(checklist.content);
+      }
     };
 
     loadData();
@@ -40,41 +70,50 @@ function App() {
   return (
     <div className="App">
       <div id="edit" className="main">
-        <div className="noprint">
-          <div>
-            <p>
-              <b>Parameters</b>
-            </p>
-            <textarea
-              value={markdownParamsText}
-              onChange={(event) => {
-                setMarkdownParamsText(event.target.value);
-                try {
-                  setMarkdownParams(JSON.parse(event.target.value));
-                } catch (error) {}
-              }}
-              cols="120"
-              rows="20"
-            ></textarea>
+        {mode == "rw" && (
+          <div className="noprint">
+            <div>
+              <p>
+                <b>Parameters</b>
+              </p>
+              <textarea
+                value={markdownParamsText}
+                onChange={(event) => {
+                  setMarkdownParamsText(event.target.value);
+                  try {
+                    setMarkdownParams(JSON.parse(event.target.value));
+                  } catch (error) {}
+                }}
+                cols="120"
+                rows="10"
+              ></textarea>
+            </div>
+            <div>
+              <p>
+                <b>Markdown template</b>
+              </p>
+              <textarea
+                value={markdownTemplate}
+                onChange={(event) => {
+                  debugger;
+                  setMarkdownTemplate(event.target.value);
+                }}
+                cols="120"
+                rows="50"
+              ></textarea>
+            </div>
           </div>
-          <div>
-            <p>
-              <b>Markdown template</b>
-            </p>
-            <textarea
-              value={markdownTemplate}
-              onChange={(event) => {
-                debugger;
-                setMarkdownTemplate(event.target.value);
-              }}
-              cols="120"
-              rows="50"
-            ></textarea>
-          </div>
-        </div>
-        <div style={{ marginLeft: "20px" }}>
+        )}
+        <div
+          style={{
+            paddingLeft: "20px",
+            marginLeft: "20px",
+            width: mode == "r" ? "80%" : "",
+            margin: mode == "r" ? "auto" : "",
+          }}
+        >
           <p className="noprint">
-            <b>Preview</b>
+            {mode == "rw" && <b>Preview</b>}
             <button
               style={{ marginLeft: "20px" }}
               onClick={() => window.print()}
@@ -82,17 +121,29 @@ function App() {
               Print
             </button>
           </p>
-          <div className="checklist">
+          <div className={"checklist " + mode}>
             <ReactMarkdown remarkPlugins={[gfm]} children={markdown} />
           </div>
         </div>
       </div>
-      <div className="noprint">
-        <p>
-          <b>Instantiated markdown, create a <a href="https://gist.github.com/" target="_blank" rel="noreferrer">gist</a> and start the procedure</b>
-        </p>
-        <textarea value={markdown} cols="200" rows="50"></textarea>
-      </div>
+      {mode == "rw" && (
+        <div className="noprint">
+          <p>
+            <b>
+              Instantiated markdown, create a{" "}
+              <a
+                href="https://gist.github.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                gist
+              </a>{" "}
+              and start the procedure
+            </b>
+          </p>
+          <textarea value={markdown} cols="200" rows="50"></textarea>
+        </div>
+      )}
     </div>
   );
 }
