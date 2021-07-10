@@ -2,6 +2,8 @@ import "./App.css";
 import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
+import emoji from "remark-emoji";
+
 import { useEffect, useState } from "react";
 
 Handlebars.registerHelper({
@@ -28,6 +30,7 @@ function App() {
   );
 
   const [markdownError, setMarkdownError] = useState(undefined);
+  const [markdownUrl, setMarkdownUrl] = useState(undefined);
   const [markdownTemplate, setMarkdownTemplate] = useState("{{demo}}");
   const [renderedMarkdown, setRenderedMarkdown] = useState("");
 
@@ -50,7 +53,7 @@ function App() {
             "/" +
             markdownUrl.split("/").slice(6).join("/");
         }
-
+        setMarkdownUrl(contentUrl);
         const markdownContent = await fetch(contentUrl).then((response) =>
           response.text()
         );
@@ -67,6 +70,7 @@ function App() {
         const gist = await fetch(`https://api.github.com/gists/${gistId}`).then(
           (response) => response.json()
         );
+        setMarkdownUrl(gist.html_url);
 
         let checklist = gist.files["tasklist.md"] || gist.files["checklist.md"];
 
@@ -106,6 +110,7 @@ function App() {
             content: JSON.stringify(options),
           };
         }
+
         if (params) {
           setMarkdownParamsText(
             JSON.stringify(JSON.parse(params.content), undefined, 2)
@@ -120,7 +125,7 @@ function App() {
   }, []);
   useEffect(() => {
     try {
-      const template = Handlebars.compile(markdownTemplate)
+      const template = Handlebars.compile(markdownTemplate);
       setRenderedMarkdown(template(markdownParams));
       setMarkdownError("");
     } catch (error) {
@@ -156,6 +161,11 @@ function App() {
             <div>
               <p>
                 <b>Markdown template</b>{" "}
+                {markdownUrl && (
+                  <a href={markdownUrl} target="_blank" rel="noreferrer">
+                    source
+                  </a>
+                )}
                 <span style={{ color: "red" }}>{markdownError}</span>
               </p>
               <textarea
@@ -193,7 +203,7 @@ function App() {
             </button>
           </p>
           <div className={"checklist " + mode}>
-            <ReactMarkdown remarkPlugins={[gfm]} children={renderedMarkdown} />
+            <ReactMarkdown remarkPlugins={[gfm, emoji]} children={renderedMarkdown} />
           </div>
         </div>
       </div>

@@ -97,3 +97,27 @@ pre {
   white-space: pre;
   word-break: normal;
 }
+
+blockquote {
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: .25em solid #dfe2e5;
+}
+
+blockquote>:first-child {
+  margin-top: 0;
+}
+
+blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+table, td, th {
+  border: 1px solid #3a424a;
+  padding: 6px 13px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 16px;
+  margin-top: 0;
+  border-color: grey;
+}
