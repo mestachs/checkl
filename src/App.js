@@ -1,8 +1,23 @@
 import "./App.css";
-import Mustache from "mustache";
+import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { useEffect, useState } from "react";
+
+Handlebars.registerHelper({
+  eq: (v1, v2) => v1 === v2,
+  ne: (v1, v2) => v1 !== v2,
+  lt: (v1, v2) => v1 < v2,
+  gt: (v1, v2) => v1 > v2,
+  lte: (v1, v2) => v1 <= v2,
+  gte: (v1, v2) => v1 >= v2,
+  and() {
+    return Array.prototype.every.call(arguments, Boolean);
+  },
+  or() {
+    return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+  },
+});
 
 function App() {
   const [mode, setMode] = useState("rw");
@@ -34,7 +49,6 @@ function App() {
             markdownUrl.split("/").slice(3, 5).join("/") +
             "/" +
             markdownUrl.split("/").slice(6).join("/");
-          debugger;
         }
 
         const markdownContent = await fetch(contentUrl).then((response) =>
@@ -54,14 +68,50 @@ function App() {
           (response) => response.json()
         );
 
-        const params = gist.files["params.json"] || { no: "params" };
-        const checklist =
-          gist.files["tasklist.md"] || gist.files["checklist.md"];
+        let checklist = gist.files["tasklist.md"] || gist.files["checklist.md"];
 
-        setMarkdownParamsText(
-          JSON.stringify(JSON.parse(params.content), undefined, 2)
-        );
-        setMarkdownParams(JSON.parse(params.content));
+        if (checklist == undefined) {
+          const fileName = Object.keys(gist.files).find((name) =>
+            name.endsWith(".md")
+          );
+          checklist = gist.files[fileName];
+        }
+
+        let params = gist.files["params.json"];
+
+        if (params == undefined) {
+          const mutacheParams = Handlebars.parse(checklist.content);
+
+          const mustacheParamsNames = mutacheParams.body
+            .filter((k) => k.type == "MustacheStatement")
+            .flatMap((k) => k.path.parts);
+
+          const options = {};
+          for (let paramName of mustacheParamsNames) {
+            let fromUrlValue = urlParams.get("params." + paramName);
+            if (fromUrlValue) {
+              if (fromUrlValue && fromUrlValue == "false") {
+                fromUrlValue = false;
+              }
+              if (fromUrlValue && fromUrlValue == "true") {
+                fromUrlValue = true;
+              }
+              options[paramName] = fromUrlValue;
+            } else {
+              options[paramName] = "exampleValue for " + paramName;
+            }
+          }
+
+          params = {
+            content: JSON.stringify(options),
+          };
+        }
+        if (params) {
+          setMarkdownParamsText(
+            JSON.stringify(JSON.parse(params.content), undefined, 2)
+          );
+          setMarkdownParams(JSON.parse(params.content));
+        }
         setMarkdownTemplate(checklist.content);
       }
     };
@@ -70,7 +120,8 @@ function App() {
   }, []);
   useEffect(() => {
     try {
-      setRenderedMarkdown(Mustache.render(markdownTemplate, markdownParams));
+      const template = Handlebars.compile(markdownTemplate)
+      setRenderedMarkdown(template(markdownParams));
       setMarkdownError("");
     } catch (error) {
       setMarkdownError(error.message);
