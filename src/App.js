@@ -134,6 +134,12 @@ function App() {
             >
               Print
             </button>
+            <button
+              style={{ marginLeft: "20px" }}
+              onClick={() => setMode(mode == "rw" ? "r" : "rw")}
+            >
+              Toggle to {mode == "rw" ? "r" : "rw"}
+            </button>
           </p>
           <div className={"checklist " + mode}>
             <ReactMarkdown remarkPlugins={[gfm]} children={renderedMarkdown} />
