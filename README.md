@@ -42,8 +42,9 @@ my markdown content
 ```
 
 
-TODO: 
+Improvements
 
+  - [ ] Table of content and [navigation](https://mestachs.github.io/checkl/?gist=https://gist.github.com/mestachs/6e8ee2bae9e5c8322e0755486128a444&mode=r#test-second-first-first)
   - [ ] add params in url for markdown in repository (only available for gist)
   - [ ] add support for private repo ( let's hope I'll don't need a backend)
   - [ ] offer a better editor than a textarea ;)

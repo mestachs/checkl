@@ -3,11 +3,13 @@ import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import emoji from "remark-emoji";
-import slug from "remark-slug"
-import headings from "remark-autolink-headings"
+import slug from "remark-slug";
+import headings from "remark-autolink-headings";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
+const Form = JSONSchemaForm;
 
 Handlebars.registerHelper({
   eq: (v1, v2) => v1 === v2,
@@ -25,12 +27,9 @@ Handlebars.registerHelper({
 });
 
 function App() {
-  const [mode, setMode] = useState("rw");
+  const [mode, setMode] = useState("r");
+  const [paramsSchema, setParamsSchema] = useState();
   const [markdownParams, setMarkdownParams] = useState({ demo: "Stéphan" });
-  const [markdownParamsError, setMarkdownParamsError] = useState(undefined);
-  const [markdownParamsText, setMarkdownParamsText] = useState(
-    '{ "demo": "Stéphan" }'
-  );
 
   const [markdownError, setMarkdownError] = useState(undefined);
   const [markdownUrl, setMarkdownUrl] = useState(undefined);
@@ -45,7 +44,7 @@ function App() {
         urlParams.get("gist") ||
         "https://gist.github.com/mestachs/e1819a776ca1618b981d1de082a550aa";
 
-      setMode(urlParams.get("mode") || "rw");
+      setMode(urlParams.get("mode") || "r");
 
       if (markdownUrl) {
         let contentUrl = markdownUrl;
@@ -93,6 +92,11 @@ function App() {
             .filter((k) => k.type == "MustacheStatement")
             .flatMap((k) => k.path.parts);
 
+          const schema = {
+            type: "object",
+            properties: {},
+          };
+
           const options = {};
           for (let paramName of mustacheParamsNames) {
             let fromUrlValue = urlParams.get("params." + paramName);
@@ -107,7 +111,13 @@ function App() {
             } else {
               options[paramName] = "exampleValue for " + paramName;
             }
+            schema.properties[paramName] = {
+              type: "string",
+              default: fromUrlValue,
+            };
           }
+
+          setParamsSchema(schema);
 
           params = {
             content: JSON.stringify(options),
@@ -115,9 +125,6 @@ function App() {
         }
 
         if (params) {
-          setMarkdownParamsText(
-            JSON.stringify(JSON.parse(params.content), undefined, 2)
-          );
           setMarkdownParams(JSON.parse(params.content));
         }
         setMarkdownTemplate(checklist.content);
@@ -134,34 +141,25 @@ function App() {
     } catch (error) {
       setMarkdownError(error.message);
     }
-  }, [markdownTemplate, markdownParamsText, markdownParams]);
+  }, [markdownTemplate, JSON.stringify(markdownParams), markdownParams]);
 
   return (
     <div className="App">
       <div id="edit" className="main">
-        <TableOfContents key={renderedMarkdown}/>
+        <div style={ mode =="rw" ? { display: "flex", flexDirection: "column" } : {}}>
+          {paramsSchema && (
+            <Form
+              schema={paramsSchema}
+              formData={markdownParams}
+              onChange={(e) => setMarkdownParams(e.formData)}
+            >
+              <Fragment />
+            </Form>
+          )}
+          <TableOfContents key={renderedMarkdown} />
+        </div>
         {mode == "rw" && (
           <div className="noprint">
-            <div>
-              <p>
-                <b>Parameters</b>{" "}
-                <span style={{ color: "red" }}>{markdownParamsError}</span>
-              </p>
-              <textarea
-                value={markdownParamsText}
-                onChange={(event) => {
-                  setMarkdownParamsText(event.target.value);
-                  try {
-                    setMarkdownParams(JSON.parse(event.target.value));
-                    setMarkdownParamsError(undefined);
-                  } catch (error) {
-                    setMarkdownParamsError(error.message);
-                  }
-                }}
-                cols="120"
-                rows="10"
-              ></textarea>
-            </div>
             <div>
               <p>
                 <b>Markdown template</b>{" "}
@@ -207,7 +205,10 @@ function App() {
             </button>
           </p>
           <div className={"checklist " + mode}>
-            <ReactMarkdown remarkPlugins={[slug, headings, gfm, emoji]} children={renderedMarkdown} />
+            <ReactMarkdown
+              remarkPlugins={[slug, headings, gfm, emoji]}
+              children={renderedMarkdown}
+            />
           </div>
         </div>
       </div>
