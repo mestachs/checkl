@@ -205,3 +205,11 @@ label {
   -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
+
+.text-danger {
+  color: #a94442;
+}
+
+.panel-danger {
+  display: none
+}

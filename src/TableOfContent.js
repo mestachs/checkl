@@ -125,7 +125,7 @@ const TableOfContents = () => {
     const oldelement = document.getElementById(activeId);
     if (oldelement) {
       oldelement.style.color = "";
-      debugger
+      debugger;
     }
     const element = document.getElementById(newActiveId);
     element.style.color = "orange";
@@ -141,9 +141,11 @@ const TableOfContents = () => {
       oldelement.style.color = "";
     }
     const element = document.getElementById(newActiveId);
-    element.style.color = "orange";  
+    if (element) {
+      element.style.color = "orange";
+    }
     setActiveId(newActiveId);
-  };  
+  };
   useIntersectionObserver(setSmarterActiveId);
 
   return (

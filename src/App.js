@@ -115,6 +115,9 @@ function App() {
               type: "string",
               default: fromUrlValue,
             };
+            if (paramName.endsWith("Url")) {
+              schema.properties[paramName].format = "uri"
+            }
           }
 
           setParamsSchema(schema);
@@ -165,6 +168,7 @@ function App() {
           {paramsSchema && (
             <Form
               schema={paramsSchema}
+              liveValidate={true}
               formData={markdownParams}
               onChange={(e) => {
                 const url = new URL(window.location);
