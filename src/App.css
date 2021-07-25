@@ -139,10 +139,18 @@ nav {
   position: -webkit-sticky; /* Safari */
   position: sticky;
   top: 48px;
-  
+  list-style-type: none;
   max-height: calc(100vh - 70px);
   overflow: auto;
 }
+
+nav ul {
+  list-style-type: none;
+}
+nav li {
+  list-style-type: none;
+}
+
 
 @media screen and (max-width: 900px) {
   nav {
