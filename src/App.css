@@ -156,7 +156,7 @@ a {
 }
 
 li.active > a {
-  color: rgb(39, 37, 37);
+  color: orange;
 }
 
 li > a:hover {

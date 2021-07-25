@@ -1,6 +1,7 @@
+import { waitForElementToBeRemoved } from "@testing-library/react";
 import React from "react";
 
-const Headings = ({ headings, activeId }) => (
+const Headings = ({ headings, activeId, setActiveId }) => (
   <ul>
     {headings.map((heading) => (
       <li key={heading.id} className={heading.id === activeId ? "active" : ""}>
@@ -8,9 +9,7 @@ const Headings = ({ headings, activeId }) => (
           href={`#${heading.id}`}
           onClick={(e) => {
             e.preventDefault();
-            document.querySelector(`#${heading.id}`).scrollIntoView({
-              behavior: "smooth",
-            });
+            setActiveId(heading.id);
           }}
         >
           {heading.title}
@@ -26,9 +25,7 @@ const Headings = ({ headings, activeId }) => (
                   href={`#${child.id}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    document.querySelector(`#${child.id}`).scrollIntoView({
-                      behavior: "smooth",
-                    });
+                    setActiveId(child.id);
                   }}
                 >
                   {child.title}
@@ -86,7 +83,7 @@ const getNestedHeadings = (headingElements) => {
 
       nestedHeadings[nestedHeadings.length - 1].items.push({
         id,
-        title: counters.h1 + ". " + counters.h2 + " " + title,
+        title: counters.h1 + "." + counters.h2 + " " + title,
       });
     }
 
@@ -95,7 +92,7 @@ const getNestedHeadings = (headingElements) => {
       nestedHeadings[nestedHeadings.length - 1].items.push({
         id,
         title:
-          counters.h1 + ". " + counters.h2 + ". " + counters.h3 + " " + title,
+          counters.h1 + "." + counters.h2 + "." + counters.h3 + " " + title,
       });
     }
   });
@@ -106,48 +103,17 @@ const getNestedHeadings = (headingElements) => {
 const useIntersectionObserver = (setActiveId) => {
   const headingElementsRef = React.useRef({});
   React.useEffect(() => {
-    const callback = (headings) => {
-      headingElementsRef.current = headings.reduce((map, headingElement) => {
-        map[headingElement.target.id] = headingElement;
-        return map;
-      }, headingElementsRef.current);
-
-      // Get all headings that are currently visible on the page
-      const visibleHeadings = [];
-      Object.keys(headingElementsRef.current).forEach((key) => {
-        const headingElement = headingElementsRef.current[key];
-        if (headingElement.isIntersecting) visibleHeadings.push(headingElement);
-      });
-
-      const getIndexFromId = (id) =>
-        headingElements.findIndex((heading) => heading.id === id);
-
-      // If there is only one visible heading, this is our "active" heading
-      if (visibleHeadings.length === 1) {
-        debugger;
-        setActiveId(visibleHeadings[0].target.id);
-        // If there is more than one visible heading,
-        // choose the one that is closest to the top of the page
-      } else if (visibleHeadings.length > 1) {
-        const sortedVisibleHeadings = visibleHeadings.sort(
-          (a, b) => getIndexFromId(a.target.id) > getIndexFromId(b.target.id)
-        );
-        debugger;
-        setActiveId(sortedVisibleHeadings[0].target.id);
-      }
-      debugger;
-    };
-
-    const observer = new IntersectionObserver(callback, {
-      root: document.querySelector("iframe"),
-      rootMargin: "500px",
-    });
-
     const headingElements = Array.from(document.querySelectorAll("h1, h2, h3"));
 
-    headingElements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
+    headingElements.forEach((element) => {
+      element.addEventListener(
+        "mouseover",
+        function (event) {
+          setActiveId(event.target.id);
+        },
+        false
+      );
+    });
   }, [setActiveId]);
 };
 
@@ -157,11 +123,38 @@ const useIntersectionObserver = (setActiveId) => {
 const TableOfContents = () => {
   const [activeId, setActiveId] = React.useState();
   const { nestedHeadings } = useHeadingsData();
-  useIntersectionObserver(setActiveId);
+  const setSmarterActiveIdWithScroll = (newActiveId) => {
+    const oldelement = document.getElementById(activeId);
+    if (oldelement) {
+      oldelement.style.color = "";
+      debugger
+    }
+    const element = document.getElementById(newActiveId);
+    element.style.color = "orange";
+    element.scrollIntoView({
+      behavior: "smooth",
+    });
+    setActiveId(newActiveId);
+  };
+
+  const setSmarterActiveId = (newActiveId) => {
+    const oldelement = document.getElementById(activeId);
+    if (oldelement) {
+      oldelement.style.color = "";
+    }
+    const element = document.getElementById(newActiveId);
+    element.style.color = "orange";  
+    setActiveId(newActiveId);
+  };  
+  useIntersectionObserver(setSmarterActiveId);
 
   return (
     <nav aria-label="Table of contents">
-      <Headings headings={nestedHeadings} activeId={activeId} />
+      <Headings
+        headings={nestedHeadings}
+        activeId={activeId}
+        setActiveId={setSmarterActiveIdWithScroll}
+      />
     </nav>
   );
 };
