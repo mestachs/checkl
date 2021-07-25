@@ -1,4 +1,3 @@
-import { waitForElementToBeRemoved } from "@testing-library/react";
 import React from "react";
 
 const Headings = ({ headings, activeId, setActiveId }) => (
@@ -101,7 +100,6 @@ const getNestedHeadings = (headingElements) => {
 };
 
 const useIntersectionObserver = (setActiveId) => {
-  const headingElementsRef = React.useRef({});
   React.useEffect(() => {
     const headingElements = Array.from(document.querySelectorAll("h1, h2, h3"));
 

@@ -124,10 +124,21 @@ function App() {
           };
         }
 
-        if (params) {
+        if (params) { 
           setMarkdownParams(JSON.parse(params.content));
         }
         setMarkdownTemplate(checklist.content);
+        setTimeout(() => {
+          var hash = window.location.hash;
+          if (hash) {
+            try {
+              var element = document.querySelector(hash);
+              if (element) {
+                element.scrollIntoView();
+              }
+            } catch (ignore) {}
+          }
+        }, 1000);
       }
     };
 
@@ -146,12 +157,29 @@ function App() {
   return (
     <div className="App">
       <div id="edit" className="main">
-        <div style={ mode =="rw" ? { display: "flex", flexDirection: "column" } : {}}>
+        <div
+          style={
+            mode == "rw" ? { display: "flex", flexDirection: "column" } : {}
+          }
+        >
           {paramsSchema && (
             <Form
               schema={paramsSchema}
               formData={markdownParams}
-              onChange={(e) => setMarkdownParams(e.formData)}
+              onChange={(e) => {
+                const url = new URL(window.location);
+
+                const queryParams = url.searchParams;
+
+                for (let property of Object.keys(e.formData)) {
+                  debugger;
+                  queryParams.set(property, e.formData[property]);
+                }
+
+                window.history.replaceState({}, "", url.toString());
+
+                setMarkdownParams(e.formData);
+              }}
             >
               <Fragment />
             </Form>
