@@ -3,8 +3,11 @@ import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import emoji from "remark-emoji";
+import slug from "remark-slug"
+import headings from "remark-autolink-headings"
 
 import { useEffect, useState } from "react";
+import TableOfContents from "./TableOfContent";
 
 Handlebars.registerHelper({
   eq: (v1, v2) => v1 === v2,
@@ -136,6 +139,7 @@ function App() {
   return (
     <div className="App">
       <div id="edit" className="main">
+        <TableOfContents key={renderedMarkdown}/>
         {mode == "rw" && (
           <div className="noprint">
             <div>
@@ -203,7 +207,7 @@ function App() {
             </button>
           </p>
           <div className={"checklist " + mode}>
-            <ReactMarkdown remarkPlugins={[gfm, emoji]} children={renderedMarkdown} />
+            <ReactMarkdown remarkPlugins={[slug, headings, gfm, emoji]} children={renderedMarkdown} />
           </div>
         </div>
       </div>

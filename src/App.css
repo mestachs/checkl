@@ -27,9 +27,17 @@ h1:before {
   content: counter(h1counter) ".\0000a0\0000a0";
   counter-increment: h1counter;
 }
+h2 {
+  counter-reset: h3counter;
+}
 h2:before {
   content: counter(h1counter) "." counter(h2counter) ".\0000a0\0000a0";
   counter-increment: h2counter;
+}
+
+h3:before {
+  content: counter(h1counter) "." counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
+  counter-increment: h3counter;
 }
 
 .checklist.rw {
@@ -120,4 +128,37 @@ table, td, th {
   margin-bottom: 16px;
   margin-top: 0;
   border-color: grey;
+}
+
+nav {
+  width: 220px;
+  min-width: 220px;
+  padding: 16px;
+  margin: 8px;
+  align-self: flex-start;
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 48px;
+  
+  max-height: calc(100vh - 70px);
+  overflow: auto;
+}
+
+@media screen and (max-width: 900px) {
+  nav {
+    display: none;
+  }
+}
+
+a {
+  color: grey;
+  text-decoration: none;
+}
+
+li.active > a {
+  color: rgb(39, 37, 37);
+}
+
+li > a:hover {
+  color: rgb(39, 37, 37);
 }
