@@ -133,12 +133,11 @@ table, td, th {
 nav {
   width: 320px;
   min-width: 220px;
-  padding: 16px;
   margin: 8px;
   align-self: flex-start;
   position: -webkit-sticky; /* Safari */
   position: sticky;
-  top: 48px;
+  top: 10px;
   list-style-type: none;
   max-height: calc(100vh - 70px);
   overflow: auto;
@@ -179,11 +178,10 @@ fieldset {
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 0px;
 }
 
 .rjsf {
-
   display: block;
 }
 

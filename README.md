@@ -44,8 +44,15 @@ my markdown content
 
 Improvements
 
-  - [ ] Table of content and [navigation](https://mestachs.github.io/checkl/?gist=https://gist.github.com/mestachs/6e8ee2bae9e5c8322e0755486128a444&mode=r#test-second-first-first)
-  - [ ] add params in url for markdown in repository (only available for gist)
-  - [ ] add support for private repo ( let's hope I'll don't need a backend)
-  - [ ] offer a better editor than a textarea ;)
-  - [ ] add some localstorage to store your latest checklist
+  - [x] Table of content and [navigation](https://mestachs.github.io/checkl/?gist=https://gist.github.com/mestachs/6e8ee2bae9e5c8322e0755486128a444&mode=r#test-second-first-first)
+  - [x] add params in url for markdown in repository (only available for gist)
+  - [x] add support for private repo ( let's hope I'll don't need a backend)
+  - [ ] Make the code way much nicer (nearly in a single file)
+  - [ ] offer a better editor than a textarea and allow to save to github
+  - [ ] add some localstorage to store your latest checklist ?
+
+
+Research
+  - Runbooks : https://twitter.com/mestachs/status/1416370635333382144?s=20
+  - https://about.gitlab.com/handbook/engineering/security/security-engineering-and-research/application-security/runbooks/threat-modeling.html
+  - https://about.gitlab.com/handbook/about/on-call/

@@ -26,125 +26,196 @@ Handlebars.registerHelper({
   },
 });
 
+const ExternalLink = ({ href, children, ...rest }) => (
+  <a
+    target="_blank"
+    rel="noopener noreferrer"
+    href={href}
+    alt={"external link"}
+    {...rest}
+  >
+    {children ?? href}
+  </a>
+);
+
 function App() {
   const [mode, setMode] = useState("r");
+  const [showLogin, setShowLogin] = useState(false);
   const [paramsSchema, setParamsSchema] = useState();
-  const [markdownParams, setMarkdownParams] = useState({ demo: "Stéphan" });
+  const [markdownParams, setMarkdownParams] = useState({});
+  const [rememberMe, setRememberMe] = useState(
+    window.localStorage.getItem("rememberMe")
+  );
+  const [token, setToken] = useState(window.localStorage.getItem("token"));
 
   const [markdownError, setMarkdownError] = useState(undefined);
   const [markdownUrl, setMarkdownUrl] = useState(undefined);
   const [markdownTemplate, setMarkdownTemplate] = useState("{{demo}}");
   const [renderedMarkdown, setRenderedMarkdown] = useState("");
 
-  useEffect(() => {
-    const loadData = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const markdownUrl = urlParams.get("markdown");
-      const gistUrl =
-        urlParams.get("gist") ||
-        "https://gist.github.com/mestachs/e1819a776ca1618b981d1de082a550aa";
+  const loadData = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const markdownUrl = urlParams.get("markdown");
+    const gistUrl =
+      urlParams.get("gist") ||
+      "https://gist.github.com/mestachs/e1819a776ca1618b981d1de082a550aa";
 
-      setMode(urlParams.get("mode") || "r");
+    setMode(urlParams.get("mode") || "r");
 
-      if (markdownUrl) {
-        let contentUrl = markdownUrl;
-        if (markdownUrl.startsWith("https://github.com/")) {
-          contentUrl =
-            "https://raw.githubusercontent.com/" +
-            markdownUrl.split("/").slice(3, 5).join("/") +
-            "/" +
-            markdownUrl.split("/").slice(6).join("/");
-        }
-        setMarkdownUrl(contentUrl);
-        const markdownContent = await fetch(contentUrl).then((response) =>
-          response.text()
-        );
-        setMarkdownTemplate(markdownContent);
-      } else if (gistUrl) {
-        let gistId = gistUrl;
-        if (
-          gistUrl.startsWith("https://gist.github.com") ||
-          gistUrl.startsWith("https://gist.githubusercontent.com")
-        ) {
-          gistId = gistUrl.split("/")[4];
-        }
-
-        const gist = await fetch(`https://api.github.com/gists/${gistId}`).then(
-          (response) => response.json()
-        );
-        setMarkdownUrl(gist.html_url);
-
-        let checklist = gist.files["tasklist.md"] || gist.files["checklist.md"];
-
-        if (checklist == undefined) {
-          const fileName = Object.keys(gist.files).find((name) =>
-            name.endsWith(".md")
-          );
-          checklist = gist.files[fileName];
-        }
-
-        let params = gist.files["params.json"];
-
-        if (params == undefined) {
-          const mutacheParams = Handlebars.parse(checklist.content);
-
-          const mustacheParamsNames = mutacheParams.body
-            .filter((k) => k.type == "MustacheStatement")
-            .flatMap((k) => k.path.parts);
-
-          const schema = {
-            type: "object",
-            properties: {},
-          };
-
-          const options = {};
-          for (let paramName of mustacheParamsNames) {
-            let fromUrlValue = urlParams.get("params." + paramName);
-            if (fromUrlValue) {
-              if (fromUrlValue && fromUrlValue == "false") {
-                fromUrlValue = false;
-              }
-              if (fromUrlValue && fromUrlValue == "true") {
-                fromUrlValue = true;
-              }
-              options[paramName] = fromUrlValue;
-            } else {
-              options[paramName] = "exampleValue for " + paramName;
-            }
-            schema.properties[paramName] = {
-              type: "string",
-              default: fromUrlValue,
-            };
-            if (paramName.endsWith("Url")) {
-              schema.properties[paramName].format = "uri"
-            }
-          }
-
-          setParamsSchema(schema);
-
-          params = {
-            content: JSON.stringify(options),
-          };
-        }
-
-        if (params) { 
-          setMarkdownParams(JSON.parse(params.content));
-        }
-        setMarkdownTemplate(checklist.content);
-        setTimeout(() => {
-          var hash = window.location.hash;
-          if (hash) {
-            try {
-              var element = document.querySelector(hash);
-              if (element) {
-                element.scrollIntoView();
-              }
-            } catch (ignore) {}
-          }
-        }, 1000);
+    if (markdownUrl) {
+      let contentUrl = markdownUrl;
+      if (markdownUrl.startsWith("https://github.com/")) {
+        contentUrl =
+          "https://raw.githubusercontent.com/" +
+          markdownUrl.split("/").slice(3, 5).join("/") +
+          "/" +
+          markdownUrl.split("/").slice(6).join("/");
       }
-    };
 
+      let headers = {};
+      if (token) {
+        headers = {
+          Accept: "application/vnd.github.v3.raw",
+          Authorization: `token ${token}`,
+        };
+        contentUrl =
+          "https://api.github.com/repos/" +
+          markdownUrl.split("/").slice(3, 5).join("/") +
+          "/contents/" +
+          markdownUrl.split("/").slice(7).join("/");
+      }
+      setMarkdownUrl(markdownUrl);
+
+      const markdownContent = await fetch(contentUrl, {
+        headers: headers,
+      }).then((response) => {
+        return response.text();
+      });
+      setMarkdownTemplate(markdownContent);
+
+      const mutacheParams = Handlebars.parse(markdownContent);
+
+      const mustacheParamsNames = mutacheParams.body
+        .filter((k) => k.type == "MustacheStatement")
+        .flatMap((k) => k.path.parts);
+
+      const schema = {
+        type: "object",
+        properties: {},
+      };
+
+      const options = {};
+      for (let paramName of mustacheParamsNames) {
+        let fromUrlValue = urlParams.get("params." + paramName);
+        if (fromUrlValue) {
+          if (fromUrlValue && fromUrlValue == "false") {
+            fromUrlValue = false;
+          }
+          if (fromUrlValue && fromUrlValue == "true") {
+            fromUrlValue = true;
+          }
+          options[paramName] = fromUrlValue;
+        } else {
+          options[paramName] = "exampleValuefor" + paramName;
+        }
+        schema.properties[paramName] = {
+          type: "string",
+          default: fromUrlValue,
+        };
+        if (paramName.endsWith("Url")) {
+          schema.properties[paramName].format = "uri";
+        }
+      }
+
+      setParamsSchema(schema);
+
+      setMarkdownParams(options);
+    } else if (gistUrl) {
+      let gistId = gistUrl;
+      if (
+        gistUrl.startsWith("https://gist.github.com") ||
+        gistUrl.startsWith("https://gist.githubusercontent.com")
+      ) {
+        gistId = gistUrl.split("/")[4];
+      }
+
+      const gist = await fetch(`https://api.github.com/gists/${gistId}`).then(
+        (response) => response.json()
+      );
+      setMarkdownUrl(gist.html_url);
+
+      let checklist = gist.files["tasklist.md"] || gist.files["checklist.md"];
+
+      if (checklist == undefined) {
+        const fileName = Object.keys(gist.files).find((name) =>
+          name.endsWith(".md")
+        );
+        checklist = gist.files[fileName];
+      }
+
+      let params = gist.files["params.json"];
+
+      if (params == undefined) {
+        const mutacheParams = Handlebars.parse(checklist.content);
+
+        const mustacheParamsNames = mutacheParams.body
+          .filter((k) => k.type == "MustacheStatement")
+          .flatMap((k) => k.path.parts);
+
+        const schema = {
+          type: "object",
+          properties: {},
+        };
+
+        const options = {};
+        for (let paramName of mustacheParamsNames) {
+          let fromUrlValue = urlParams.get("params." + paramName);
+          if (fromUrlValue) {
+            if (fromUrlValue && fromUrlValue == "false") {
+              fromUrlValue = false;
+            }
+            if (fromUrlValue && fromUrlValue == "true") {
+              fromUrlValue = true;
+            }
+            options[paramName] = fromUrlValue;
+          } else {
+            options[paramName] = "exampleValuefor" + paramName;
+          }
+          schema.properties[paramName] = {
+            type: "string",
+            default: fromUrlValue,
+          };
+          if (paramName.endsWith("Url")) {
+            schema.properties[paramName].format = "uri";
+          }
+        }
+
+        setParamsSchema(schema);
+
+        params = {
+          content: JSON.stringify(options),
+        };
+      }
+
+      if (params) {
+        setMarkdownParams(JSON.parse(params.content));
+      }
+      setMarkdownTemplate(checklist.content);
+      setTimeout(() => {
+        var hash = window.location.hash;
+        if (hash) {
+          try {
+            var element = document.querySelector(hash);
+            if (element) {
+              element.scrollIntoView();
+            }
+          } catch (ignore) {}
+        }
+      }, 1000);
+    }
+  };
+
+  useEffect(() => {
     loadData();
   }, []);
   useEffect(() => {
@@ -165,6 +236,66 @@ function App() {
             mode == "rw" ? { display: "flex", flexDirection: "column" } : {}
           }
         >
+          <div className="noprint login">
+          Accessing a private repo ?<input type="checkbox" onChange={e => setShowLogin(!showLogin)}></input>
+                  <br></br>
+            {showLogin && (
+              <div>
+                <p>
+                  {""}
+                  <br></br>
+                  <ExternalLink
+                    href="https://github.com/settings/tokens"
+                    style={{ paddingRight: "10px" }}
+                  >
+                    [_] Generate a github token <br></br>
+                    [_] Limit the scope to repo and/or gist <br></br>
+                    [_] Paste it <br></br>
+                    [_] Then hit the reload button<br></br>
+                  </ExternalLink>
+                </p>
+                <br></br>
+                <label>
+                  Token:{" "}
+                  <input
+                    type="password"
+                    onChange={(e) => {
+                      if (rememberMe) {
+                        window.localStorage.setItem("token", e.target.value);
+                      }
+                      setToken(e.target.value);
+                    }}
+                  />
+                </label>
+                <br></br>
+                <label>
+                  Remember me
+                  <input
+                    name="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => {
+                      setRememberMe(e.target.checked);
+                      if (e.target.checked) {
+                        window.localStorage.setItem("token", token);
+                      }
+                    }}
+                    type="checkbox"
+                  />
+                </label>
+                <br></br>
+                <button onClick={loadData}>Reload</button>
+              </div>
+            )}
+            <p className="noprint">
+              <button onClick={() => window.print()}>Print</button>
+              <button
+                style={{ marginLeft: "20px" }}
+                onClick={() => setMode(mode == "rw" ? "r" : "rw")}
+              >
+                Toggle to {mode == "rw" ? "r" : "rw"}
+              </button>
+            </p>
+          </div>
           {paramsSchema && (
             <Form
               schema={paramsSchema}
@@ -176,8 +307,7 @@ function App() {
                 const queryParams = url.searchParams;
 
                 for (let property of Object.keys(e.formData)) {
-                  debugger;
-                  queryParams.set(property, e.formData[property]);
+                  queryParams.set("params." + property, e.formData[property]);
                 }
 
                 window.history.replaceState({}, "", url.toString());
@@ -192,13 +322,11 @@ function App() {
         </div>
         {mode == "rw" && (
           <div className="noprint">
-            <div>
+            <div style={{ paddingLeft: "40px" }}>
               <p>
                 <b>Markdown template</b>{" "}
                 {markdownUrl && (
-                  <a href={markdownUrl} target="_blank" rel="noreferrer">
-                    source
-                  </a>
+                  <ExternalLink href={markdownUrl}>source</ExternalLink>
                 )}
                 <span style={{ color: "red" }}>{markdownError}</span>
               </p>
@@ -207,7 +335,7 @@ function App() {
                 onChange={(event) => {
                   setMarkdownTemplate(event.target.value);
                 }}
-                cols="120"
+                cols="80"
                 rows="50"
               ></textarea>
             </div>
@@ -221,22 +349,11 @@ function App() {
             margin: mode == "r" ? "auto" : "",
           }}
         >
-          <p className="noprint">
-            {mode == "rw" && <b>Preview</b>}
-            <button
-              style={{ marginLeft: "20px" }}
-              onClick={() => window.print()}
-            >
-              Print
-            </button>
-            <button
-              style={{ marginLeft: "20px" }}
-              onClick={() => setMode(mode == "rw" ? "r" : "rw")}
-            >
-              Toggle to {mode == "rw" ? "r" : "rw"}
-            </button>
-          </p>
           <div className={"checklist " + mode}>
+            <p>
+              Source :{" "}
+              <ExternalLink href={markdownUrl}>{markdownUrl}</ExternalLink>
+            </p>
             <ReactMarkdown
               remarkPlugins={[slug, headings, gfm, emoji]}
               children={renderedMarkdown}
@@ -249,13 +366,13 @@ function App() {
           <p>
             <b>
               Instantiated markdown, create a{" "}
-              <a
+              <ExternalLink
                 href="https://gist.github.com/"
                 target="_blank"
                 rel="noreferrer"
               >
                 gist
-              </a>{" "}
+              </ExternalLink>{" "}
               and start the procedure
             </b>
           </p>
