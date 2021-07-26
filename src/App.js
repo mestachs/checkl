@@ -43,10 +43,8 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [paramsSchema, setParamsSchema] = useState();
   const [markdownParams, setMarkdownParams] = useState({});
-  const [rememberMe, setRememberMe] = useState(
-    window.localStorage.getItem("rememberMe")
-  );
-  const [token, setToken] = useState(window.localStorage.getItem("token"));
+  
+  const [token, setToken] = useState();
 
   const [markdownError, setMarkdownError] = useState(undefined);
   const [markdownUrl, setMarkdownUrl] = useState(undefined);
@@ -250,7 +248,7 @@ function App() {
                   >
                     [_] Generate a github token <br></br>
                     [_] Limit the scope to repo and/or gist <br></br>
-                    [_] Paste it <br></br>
+                    [_] Paste it with 1password<br></br>
                     [_] Then hit the reload button<br></br>
                   </ExternalLink>
                 </p>
@@ -260,29 +258,11 @@ function App() {
                   <input
                     type="password"
                     onChange={(e) => {
-                      if (rememberMe) {
-                        window.localStorage.setItem("token", e.target.value);
-                      }
                       setToken(e.target.value);
                     }}
                   />
                 </label>
-                <br></br>
-                <label>
-                  Remember me
-                  <input
-                    name="rememberMe"
-                    checked={rememberMe}
-                    onChange={(e) => {
-                      setRememberMe(e.target.checked);
-                      if (e.target.checked) {
-                        window.localStorage.setItem("token", token);
-                      }
-                    }}
-                    type="checkbox"
-                  />
-                </label>
-                <br></br>
+             
                 <button onClick={loadData}>Reload</button>
               </div>
             )}
