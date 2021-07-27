@@ -1,6 +1,6 @@
 
 # Checkl
-![Checkl](https://github.com/mestachs/checkl/raw/master/src/logo.png"CheckL")
+![Checkl](https://github.com/mestachs/checkl/raw/master/src/logo.png)
 
 ## The problem 
 
