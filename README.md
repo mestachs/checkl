@@ -18,12 +18,15 @@ The content of the procedure :
 Ok stop the blabla show me one
 
 - the initial procedure is written as a gist (public or secret) or as markdown in a repo, now let's say it's an upgrade procedure of server that implies some automation but also coordination of the tests
+ 
 - now show me procedure 
    - the "source" template is [here](https://gist.github.com/mestachs/351a326b75d04d23ad05c0a23909ccf6)
    - to upgrade from 2.20 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.20&params.endVersion=2.37&params.hide=false&mode=r)
    - to upgrade from 2.30 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.30&params.endVersion=2.37&params.hide=false&mode=r)
    - to upgrade from 2.31 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.31&params.endVersion=2.37&params.hide=false&mode=r)
 - other example : your monitoring check send you a link to a [procedure](https://mestachs.github.io/checkl/?gist=ae9a59f811db50062ac62a36a7a37d93&params.slackChannel=ops-client1&params.emailClient=badnews@forClient.com&params.server=server-dhis2-ops.com&mode=r) with url, contact infos,...
+
+![checkl-demo-dymanic-content](https://user-images.githubusercontent.com/371692/127216698-5dc3ecec-feb6-4ddf-994f-0ff39736cf55.gif)
 
 ## How to use
 
