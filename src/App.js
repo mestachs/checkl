@@ -246,7 +246,7 @@ function App() {
             mode == "rw" ? { display: "flex", flexDirection: "column" } : {}
           }
         >
-          <div className="noprint login">
+          <div className="noprint login fade-in-text">
             Accessing a private repo ?
             <input
               type="checkbox"
@@ -314,7 +314,7 @@ function App() {
               <Fragment />
             </Form>
           )}
-          <TableOfContents key={renderedMarkdown} />
+          <TableOfContents key={renderedMarkdown}/>
         </div>
         {mode == "rw" && (
           <div className="noprint">
@@ -345,7 +345,7 @@ function App() {
             margin: mode == "r" ? "auto" : "",
           }}
         >
-          <div className={"checklist " + mode}>
+          <div className={"checklist " + mode+" fade-in-text"}>
             <p>
               Source :{" "}
               <ExternalLink href={markdownUrl}>{markdownUrl}</ExternalLink>

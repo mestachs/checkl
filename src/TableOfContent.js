@@ -149,7 +149,7 @@ const TableOfContents = () => {
   useIntersectionObserver(setSmarterActiveId);
 
   return (
-    <nav aria-label="Table of contents">
+    <nav aria-label="Table of contents"  className="fade-in-text">
       <Headings
         headings={nestedHeadings}
         activeId={activeId}

@@ -1,6 +1,11 @@
 body {
   margin: 10px;
-  background-color: rgb(255,255,240)
+  background-color: rgb(255,255,240);
+  background-image: url("https://github.com/mestachs/checkl/raw/master/src/logo.png");
+  background-position: top right; /* Center the image */
+  background-position-y: 90px;
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: 150px;
 }
 
 h1 {
