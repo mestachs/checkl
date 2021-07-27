@@ -18,18 +18,20 @@ Ok stop the blabla show me one
 
 - the initial procedure is written as a gist (public or secret) or as markdown in a repo, now let's say it's an upgrade procedure of server that implies some automation but also coordination of the tests
 - now show me procedure 
-   - the "source" template is 
+   - the "source" template is [here](https://gist.github.com/mestachs/351a326b75d04d23ad05c0a23909ccf6)
    - to upgrade from 2.20 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.20&params.endVersion=2.37&params.hide=false&mode=r)
    - to upgrade from 2.30 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.30&params.endVersion=2.37&params.hide=false&mode=r)
    - to upgrade from 2.31 to 2.37 for a given server : [here it is](https://mestachs.github.io/checkl/?gist=351a326b75d04d23ad05c0a23909ccf6&params.sourceDhis2Url=https://dhis2.play.org&params.startVersion=2.31&params.endVersion=2.37&params.hide=false&mode=r)
 - other example : your monitoring check send you a link to a [procedure](https://mestachs.github.io/checkl/?gist=ae9a59f811db50062ac62a36a7a37d93&params.slackChannel=ops-client1&params.emailClient=badnews@forClient.com&params.server=server-dhis2-ops.com&mode=r) with url, contact infos,...
 
+## How to use
+
+Build and url, send it to your colleagues.
 
 So you can provide the following query params
- - `gist` with the url or id of the gist OR `markdown` with url to a repo (public or private
+ - `gist` with the url or id of the gist OR `markdown` with url to a repo (public or private repo on github)
  - `params.PARAM_NAME` with value to substitute in the markdown : {{PARAM_NAME}}
  - the markdown can contains some sort of logic like below
-
 ```
 {{#if (or 
         (eq section1 "foo")
@@ -46,7 +48,14 @@ my markdown content
 {{/if}}
 
 ```
-
+ - embed some mermaid or PlantUML diagrams as code block
+```
+graph LR
+    A[Square Rect] -- Link text --> B((Circle))
+    A --> C(Round Rect)
+    B --> D{Rhombus}
+    C --> D
+```
 
 # More
 
