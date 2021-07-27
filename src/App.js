@@ -5,7 +5,7 @@ import gfm from "remark-gfm";
 import emoji from "remark-emoji";
 import slug from "remark-slug";
 import headings from "remark-autolink-headings";
-
+import simplePlantUML from "@akebifiky/remark-simple-plantuml"
 import { Fragment, useEffect, useState } from "react";
 import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
@@ -336,7 +336,7 @@ function App() {
               <ExternalLink href={markdownUrl}>{markdownUrl}</ExternalLink>
             </p>
             <ReactMarkdown
-              remarkPlugins={[slug, headings, gfm, emoji]}
+              remarkPlugins={[slug, headings, gfm, emoji, simplePlantUML]}
               children={renderedMarkdown}
             />
           </div>
