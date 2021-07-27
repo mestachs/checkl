@@ -53,13 +53,16 @@ my markdown content
 
 ```
  - embed some mermaid or PlantUML diagrams as code block
-```
+
+~~~
+```mermaid
 graph LR
     A[Square Rect] -- Link text --> B((Circle))
     A --> C(Round Rect)
     B --> D{Rhombus}
     C --> D
 ```
+~~~
 
 # More
 
