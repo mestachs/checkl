@@ -1,11 +1,12 @@
 import "./App.css";
+import mermaid from "mermaid";
 import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import emoji from "remark-emoji";
 import slug from "remark-slug";
 import headings from "remark-autolink-headings";
-import simplePlantUML from "@akebifiky/remark-simple-plantuml"
+import simplePlantUML from "@akebifiky/remark-simple-plantuml";
 import { Fragment, useEffect, useState } from "react";
 import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
@@ -43,7 +44,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [paramsSchema, setParamsSchema] = useState();
   const [markdownParams, setMarkdownParams] = useState({});
-  
+
   const [token, setToken] = useState();
 
   const [markdownError, setMarkdownError] = useState(undefined);
@@ -87,7 +88,7 @@ function App() {
       const markdownContent = await fetch(contentUrl, {
         headers: headers,
       }).then((response) => {
-        setShowLogin(response.status == 404)
+        setShowLogin(response.status == 404);
         return response.text();
       });
       setMarkdownTemplate(markdownContent);
@@ -227,6 +228,16 @@ function App() {
     }
   }, [markdownTemplate, JSON.stringify(markdownParams), markdownParams]);
 
+  useEffect(() => {
+    const toTransform = document.querySelectorAll(".language-mermaid");
+    const elements = Array.from(toTransform);
+    elements.forEach((el) => (el.parentNode.style = "background-color:white"));
+    console.log(elements);
+    debugger;
+
+    mermaid.init({ noteMargin: 10 }, ".language-mermaid");
+  }, [renderedMarkdown]);
+
   return (
     <div className="App">
       <div id="edit" className="main">
@@ -236,8 +247,12 @@ function App() {
           }
         >
           <div className="noprint login">
-          Accessing a private repo ?<input type="checkbox" onChange={e => setShowLogin(!showLogin)}></input>
-                  <br></br>
+            Accessing a private repo ?
+            <input
+              type="checkbox"
+              onChange={(e) => setShowLogin(!showLogin)}
+            ></input>
+            <br></br>
             {showLogin && (
               <div>
                 <p>
@@ -263,7 +278,7 @@ function App() {
                     }}
                   />
                 </label>
-             
+
                 <button onClick={loadData}>Reload</button>
               </div>
             )}

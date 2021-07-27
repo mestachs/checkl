@@ -41,12 +41,15 @@ my markdown content
 
 ```
 
+You can also embed diagrams as markdown code block like : https://mestachs.github.io/checkl/?gist=https://gist.github.com/mestachs/068e3fd98e205db9e78ef3b1c63f4adc
 
 Improvements
 
   - [x] Table of content and [navigation](https://mestachs.github.io/checkl/?gist=https://gist.github.com/mestachs/6e8ee2bae9e5c8322e0755486128a444&mode=r#test-second-first-first)
   - [x] add params in url for markdown in repository (only available for gist)
   - [x] add support for private repo ( let's hope I'll don't need a backend)
+  - [x] add mermaid and plantuml support
+  - [ ] add support for live editing for mermaid/plantuml
   - [ ] Make the code way much nicer (nearly in a single file)
   - [ ] offer a better editor than a textarea and allow to save to github
   - [ ] add some localstorage to store your latest checklist ?
