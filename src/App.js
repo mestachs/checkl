@@ -87,9 +87,7 @@ function App() {
       const markdownContent = await fetch(contentUrl, {
         headers: headers,
       }).then((response) => {
-        if (response.status == 404) {
-          setShowLogin(true)
-        }
+        setShowLogin(response.status == 404)
         return response.text();
       });
       setMarkdownTemplate(markdownContent);
