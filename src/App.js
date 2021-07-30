@@ -350,7 +350,8 @@ function App() {
               Source :{" "}
               <ExternalLink href={markdownUrl}>{markdownUrl}</ExternalLink>
             </p>
-            <ReactMarkdown
+            <ReactMarkdown 
+              key={renderedMarkdown}
               remarkPlugins={[slug, headings, gfm, emoji, simplePlantUML]}
               children={renderedMarkdown}
             />
