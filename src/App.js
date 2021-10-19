@@ -219,6 +219,8 @@ function App() {
     loadData();
   }, []);
   useEffect(() => {
+    document.documentElement.setAttribute("data-theme", "dark")
+    debugger;
     try {
       const template = Handlebars.compile(markdownTemplate);
       setRenderedMarkdown(template(markdownParams));

@@ -1,12 +1,29 @@
+html{
+  --bg: #fff;
+  --bg-panel: #ebebeb;
+  --color-heading: rgb(27, 168, 14); 
+  --background-color: rgb(255,255,240);
+  --color-text: #333333;
+}
+
+html[data-theme='dark'] {
+  --bg: #a5a2a2;
+  --background-color: #30363d;
+  --bg-panel: #434343;
+  --color-heading: #0077ff; 
+  --color-text: #f0f6fc;
+}
 body {
   margin: 10px;
-  background-color: rgb(255,255,240);
+  color: var(--color-text);
+  background-color: var(--background-color);
   background-image: url("https://github.com/mestachs/checkl/raw/master/src/logo.png");
   background-position: top right; /* Center the image */
   background-position-y: 90px;
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: 150px;
 }
+
 
 h1 {
   background: rgb(68, 64, 64);
@@ -155,6 +172,14 @@ nav li {
   list-style-type: none;
 }
 
+li {
+  color: var(--color-text);
+}
+
+p {
+  color: var(--color-text);
+}
+
 
 @media screen and (max-width: 900px) {
   nav {
@@ -206,7 +231,7 @@ label {
   font-size: 14px;
   line-height: 1.42857143;
   color: #555;
-  background-color: #fff;
+  background-color:  var(--background-color);
   background-image: none;
   border: 1px solid #ccc;
   border-radius: 4px;
