@@ -188,7 +188,7 @@ p {
 }
 
 a {
-  color: grey;
+  color: rgb(212, 211, 211);
   text-decoration: none;
 }
 
@@ -197,7 +197,7 @@ li.active > a {
 }
 
 li > a:hover {
-  color: rgb(39, 37, 37);
+  color: rgb(255, 248, 181);
 }
 
 fieldset {
