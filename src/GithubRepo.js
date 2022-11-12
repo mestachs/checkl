@@ -20,8 +20,16 @@ const GithubRepo = (props) => {
       "https://raw.githubusercontent.com/" + location
     ).then((c) => c.text());
     const endMetaBlock = content.indexOf("---", 5);
+
+    const metaLines = content.slice(3, endMetaBlock).split("\n");
+    const meta = {};
+    for (let metaLine of metaLines) {
+      const sepIndex = metaLine.indexOf(":");
+      meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
+    }
     return {
       location,
+      meta,
       content: content.slice(endMetaBlock + 3),
     };
   });
@@ -54,6 +62,20 @@ const GithubRepo = (props) => {
               <TableOfContents key={query.data.content} />
             </div>
             <div style={{ minWidth: "70%" }}>
+              <div
+                style={{
+                  fontSize: "3em",
+                  fontWeight: "bolder",
+                  textAlign: "center",
+                  width: "70%",
+                  margin: "auto",
+                  marginBottom: "30px",
+                }}
+              >
+                {query.data.meta.title.split('"').join("")}
+              </div>
+              <code style={{ float: "right" }}>{query.data.meta.date}</code>
+              <br></br>
               <ReactMarkdown
                 key={query.data.content}
                 remarkPlugins={[slug, headings, gfm, emoji, simplePlantUML]}
