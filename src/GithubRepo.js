@@ -12,6 +12,12 @@ import mermaid from "mermaid";
 import TableOfContents from "./TableOfContent";
 import hljs from "highlight.js/lib/common";
 
+const Chip = ({ text }) => (
+  <div class="chip" alt={text}>
+    {text}
+  </div>
+);
+
 const GithubRepo = (props) => {
   const location = window.location.href.split("/gh/")[1];
 
@@ -25,7 +31,13 @@ const GithubRepo = (props) => {
     const meta = {};
     for (let metaLine of metaLines) {
       const sepIndex = metaLine.indexOf(":");
-      meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
+      try {
+        meta[metaLine.slice(0, sepIndex)] = JSON.parse(
+          metaLine.slice(sepIndex + 1)
+        );
+      } catch {
+        meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
+      }
     }
     return {
       location,
@@ -50,8 +62,6 @@ const GithubRepo = (props) => {
     <div>
       <div
         style={{
-          paddingLeft: "20px",
-          marginLeft: "20px",
           width: "80%",
           margin: "auto",
         }}
@@ -60,6 +70,11 @@ const GithubRepo = (props) => {
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div>
               <TableOfContents key={query.data.content} />
+              <br></br>
+              {query.data.meta.tags &&
+                query.data.meta.tags.map((tag) => (
+                  <Chip title={tag} text={tag} />
+                ))}
             </div>
             <div style={{ minWidth: "70%" }}>
               <div
@@ -72,7 +87,7 @@ const GithubRepo = (props) => {
                   marginBottom: "30px",
                 }}
               >
-                {query.data.meta.title.split('"').join("")}
+                {query.data.meta.title}
               </div>
               <code style={{ float: "right" }}>{query.data.meta.date}</code>
               <br></br>
