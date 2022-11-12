@@ -82,7 +82,6 @@ const GithubRepo = (props) => {
 
   return (
     <div key={location}>
-      {<span>{location.split("/").length}</span>}
       <div
         style={{
           width: "80%",
