@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import mermaid from "mermaid";
 import TableOfContents from "./TableOfContent";
 import hljs from "highlight.js/lib/common";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Chip = ({ text }) => (
   <div class="chip" alt={text}>
@@ -20,7 +20,8 @@ const Chip = ({ text }) => (
 );
 
 const GithubRepo = (props) => {
-  const location = window.location.href.split("/gh/")[1];
+  const location2 = useLocation();
+  const location = location2.pathname.split("/gh/")[1];
 
   const query = useQuery({
     queryKey: ["repoContent", location],
@@ -65,6 +66,19 @@ const GithubRepo = (props) => {
     enabled: location.split("/").length >= 2,
   });
 
+  const queryUser = useQuery({
+    queryKey: ["user", location],
+    queryFn: async () => {
+      const user = await fetch(
+        "https://api.github.com/users/" + location.split("/")[0]
+      ).then((c) => c.json());
+
+      return user;
+    },
+
+    enabled: location.split("/").length >= 2,
+  });
+
   useEffect(() => {
     const toTransform = document.querySelectorAll(".language-mermaid");
     const elements = Array.from(toTransform);
@@ -75,11 +89,6 @@ const GithubRepo = (props) => {
     hljs.highlightAll();
   }, [query?.data?.content]);
 
-  const onLinkClick = () => {
-    const refresh = () => window.location.reload();
-    setInterval(refresh, 500);
-  };
-
   return (
     <div key={location}>
       <div
@@ -88,13 +97,23 @@ const GithubRepo = (props) => {
           margin: "auto",
         }}
       >
+        {!query.data && queryUser.data && (
+          <div>
+            <img
+              style={{ borderRadius: "50%" }}
+              src={queryUser.data.avatar_url}
+            ></img>
+            <span style={{ fontSize: "5em" }}>{queryUser.data.name}</span>
+            <br></br>
+            <span>{queryUser.data.location}</span>
+          </div>
+        )}
         {queryIndex.data && (
           <div>
             {queryIndex.data.files.map((file) => (
-              <div key={file.file}>
+              <div key={file.file} style={{ margin: "40px 40px 40px 0px" }}>
                 <Link
                   to={"/gh/" + location + "/main" + file.file}
-                  onClick={onLinkClick}
                   style={{ fontWeight: "bolder", fontSize: "2em" }}
                 >
                   {file.meta.title}
