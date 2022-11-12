@@ -1,9 +1,5 @@
 import "./App.css";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import DefaultApp from "./DefaultApp";
 import GithubRepo from "./GithubRepo";

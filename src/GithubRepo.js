@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import mermaid from "mermaid";
 import TableOfContents from "./TableOfContent";
 import hljs from "highlight.js/lib/common";
+import { Link } from "react-router-dom";
 
 const Chip = ({ text }) => (
   <div class="chip" alt={text}>
@@ -21,51 +22,91 @@ const Chip = ({ text }) => (
 const GithubRepo = (props) => {
   const location = window.location.href.split("/gh/")[1];
 
-  const query = useQuery(["repoContent", location], async () => {
-    const content = await fetch(
-      "https://raw.githubusercontent.com/" + location
-    ).then((c) => c.text());
-    const endMetaBlock = content.indexOf("---", 5);
+  const query = useQuery({
+    queryKey: ["repoContent", location],
+    queryFn: async () => {
+      const content = await fetch(
+        "https://raw.githubusercontent.com/" + location
+      ).then((c) => c.text());
+      const endMetaBlock = content.indexOf("---", 5);
 
-    const metaLines = content.slice(3, endMetaBlock).split("\n");
-    const meta = {};
-    for (let metaLine of metaLines) {
-      const sepIndex = metaLine.indexOf(":");
-      try {
-        meta[metaLine.slice(0, sepIndex)] = JSON.parse(
-          metaLine.slice(sepIndex + 1)
-        );
-      } catch {
-        meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
+      const metaLines = content.slice(3, endMetaBlock).split("\n");
+      const meta = {};
+      for (let metaLine of metaLines) {
+        const sepIndex = metaLine.indexOf(":");
+        try {
+          meta[metaLine.slice(0, sepIndex)] = JSON.parse(
+            metaLine.slice(sepIndex + 1)
+          );
+        } catch {
+          meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
+        }
       }
-    }
-    return {
-      location,
-      meta,
-      content: content.slice(endMetaBlock + 3),
-    };
+      return {
+        location,
+        meta,
+        content: content.slice(endMetaBlock + 3),
+      };
+    },
+
+    enabled: location.split("/").length > 3,
+  });
+
+  const queryIndex = useQuery({
+    queryKey: ["repoIndex", location],
+    queryFn: async () => {
+      const content = await fetch(
+        "https://raw.githubusercontent.com/" + location + "/main/index.json"
+      ).then((c) => c.json());
+      content.files.reverse();
+      return content;
+    },
+
+    enabled: location.split("/").length >= 2,
   });
 
   useEffect(() => {
     const toTransform = document.querySelectorAll(".language-mermaid");
     const elements = Array.from(toTransform);
     elements.forEach((el) => (el.parentNode.style = "background-color:white"));
-    console.log(elements);
-    debugger;
 
     mermaid.init({ noteMargin: 10 }, ".language-mermaid");
 
     hljs.highlightAll();
   }, [query?.data?.content]);
 
+  const onLinkClick = () => {
+    const refresh = () => window.location.reload();
+    setInterval(refresh, 500);
+  };
+
   return (
-    <div>
+    <div key={location}>
+      {<span>{location.split("/").length}</span>}
       <div
         style={{
           width: "80%",
           margin: "auto",
         }}
       >
+        {queryIndex.data && (
+          <div>
+            {queryIndex.data.files.map((file) => (
+              <div key={file.file}>
+                <Link
+                  to={"/gh/" + location + "/main" + file.file}
+                  onClick={onLinkClick}
+                  style={{ fontWeight: "bolder", fontSize: "2em" }}
+                >
+                  {file.meta.title}
+                </Link>
+                <br></br>
+                <code style={{ marginLeft: "20px" }}>{file.meta.date}</code>
+                <hr></hr>
+              </div>
+            ))}
+          </div>
+        )}
         {query.data && (
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div>
