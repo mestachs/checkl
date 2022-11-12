@@ -16,12 +16,7 @@ html[data-theme='dark'] {
 body {
   margin: 10px;
   color: var(--color-text);
-  background-color: var(--background-color);
-  background-image: url("https://github.com/mestachs/checkl/raw/master/src/logo.png");
-  background-position: top right; /* Center the image */
-  background-position-y: 90px;
-  background-repeat: no-repeat; /* Do not repeat the image */
-  background-size: 150px;
+  background-color: var(--background-color); 
 }
 
 
