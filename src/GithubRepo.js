@@ -43,6 +43,7 @@ const GithubRepo = (props) => {
           meta[metaLine.slice(0, sepIndex)] = metaLine.slice(sepIndex + 1);
         }
       }
+
       return {
         location,
         meta,
@@ -87,7 +88,13 @@ const GithubRepo = (props) => {
     mermaid.init({ noteMargin: 10 }, ".language-mermaid");
 
     hljs.highlightAll();
-  }, [query?.data?.content]);
+
+    if (location.split("/").length == 2) {
+      document.title = queryUser.data.name;
+    } else {
+      document.title = query?.data?.meta?.title;
+    }
+  }, [queryUser?.data, query?.data?.content]);
 
   return (
     <div key={location}>
