@@ -19,6 +19,22 @@ const Chip = ({ text }) => (
   </div>
 );
 
+const HamburgerIcon = ({ location }) => {
+  const style = {
+    width: "35px",
+    height: "5px",
+    backgroundColor: "var(--color-text)",
+    margin: "6px 0",
+  };
+  return (
+    <Link to={location}>
+      <div style={style} />
+      <div style={style} />
+      <div style={style} />
+    </Link>
+  );
+};
+
 const GithubRepo = (props) => {
   const location2 = useLocation();
   const location = location2.pathname.split("/gh/")[1];
@@ -89,15 +105,23 @@ const GithubRepo = (props) => {
 
     hljs.highlightAll();
 
-    if (location.split("/").length == 2) {
+    if (location.split("/").length == 2 && queryUser.data) {
       document.title = queryUser.data.name;
-    } else {
+    }
+    if (query?.data?.meta && location.split("/").length > 2) {
       document.title = query?.data?.meta?.title;
     }
   }, [queryUser?.data, query?.data?.content]);
 
   return (
     <div key={location}>
+      {query.data && (
+        <div>
+          <HamburgerIcon
+            location={location2.pathname.split("/main/")[0] + "/"}
+          ></HamburgerIcon>
+        </div>
+      )}
       <div
         style={{
           width: "80%",
@@ -120,7 +144,10 @@ const GithubRepo = (props) => {
             {queryIndex.data.files.map((file) => (
               <div key={file.file} style={{ margin: "40px 40px 40px 0px" }}>
                 <Link
-                  to={"/gh/" + location + "/main" + file.file}
+                  to={("/gh/" + location + "/main" + file.file).replace(
+                    "//",
+                    "/"
+                  )}
                   style={{ fontWeight: "bolder", fontSize: "2em" }}
                 >
                   {file.meta.title}

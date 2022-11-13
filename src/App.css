@@ -256,3 +256,7 @@ label {
   background-color: #f1f1f1;
   color:#1a1a16;
 }
+
+body {
+  caret-color: transparent;
+}
