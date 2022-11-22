@@ -261,7 +261,7 @@ body {
   caret-color: transparent;
 }
 
-code {
+p > code {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;

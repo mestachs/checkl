@@ -1,4 +1,5 @@
 import "./App.css";
+import _ from "lodash";
 
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
@@ -76,7 +77,8 @@ const GithubRepo = (props) => {
       const content = await fetch(
         "https://raw.githubusercontent.com/" + location + "/main/index.json"
       ).then((c) => c.json());
-      content.files.reverse();
+      content.files = _.sortBy(content.files, (f) => f.file).reverse();
+
       return content;
     },
 
