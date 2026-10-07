@@ -1,5 +1,4 @@
 import "./App.css";
-import mermaid from "mermaid";
 import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
@@ -220,7 +219,6 @@ function App() {
   }, []);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "dark")
-    debugger;
     try {
       const template = Handlebars.compile(markdownTemplate);
       setRenderedMarkdown(template(markdownParams));
@@ -235,9 +233,9 @@ function App() {
     const elements = Array.from(toTransform);
     elements.forEach((el) => (el.parentNode.style = "background-color:white"));
     console.log(elements);
-    debugger;
 
-    mermaid.init({ noteMargin: 10 }, ".language-mermaid");
+    window.mermaid.initialize({ startOnLoad: false, sequence: { noteMargin: 10 } });
+    window.mermaid.run({ querySelector: ".language-mermaid" }).catch(console.error);
   }, [renderedMarkdown]);
 
   return (

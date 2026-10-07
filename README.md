@@ -82,3 +82,13 @@ graph LR
   - Runbooks : https://twitter.com/mestachs/status/1416370635333382144?s=20
   - https://about.gitlab.com/handbook/engineering/security/security-engineering-and-research/application-security/runbooks/threat-modeling.html
   - https://about.gitlab.com/handbook/about/on-call/
+
+## Development
+
+```
+bun install
+bun start        # dev server on http://localhost:5173/checkl/
+bun run build    # production build in ./build
+```
+
+Every push on `master` is built and deployed to GitHub Pages by `.github/workflows/deploy.yml`.

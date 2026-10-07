@@ -9,7 +9,6 @@ import slug from "remark-slug";
 import headings from "remark-autolink-headings";
 import simplePlantUML from "@akebifiky/remark-simple-plantuml";
 import { useEffect } from "react";
-import mermaid from "mermaid";
 import TableOfContents from "./TableOfContent";
 import hljs from "highlight.js/lib/common";
 import { Link, useLocation } from "react-router-dom";
@@ -103,7 +102,8 @@ const GithubRepo = (props) => {
     const elements = Array.from(toTransform);
     elements.forEach((el) => (el.parentNode.style = "background-color:white"));
 
-    mermaid.init({ noteMargin: 10 }, ".language-mermaid");
+    window.mermaid.initialize({ startOnLoad: false, sequence: { noteMargin: 10 } });
+    window.mermaid.run({ querySelector: ".language-mermaid" }).catch(console.error);
 
     hljs.highlightAll();
 
