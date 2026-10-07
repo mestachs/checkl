@@ -1,11 +1,7 @@
 import "./App.css";
 import Handlebars from "handlebars";
 import ReactMarkdown from "react-markdown";
-import gfm from "remark-gfm";
-import emoji from "remark-emoji";
-import slug from "remark-slug";
-import headings from "remark-autolink-headings";
-import simplePlantUML from "@akebifiky/remark-simple-plantuml";
+import { remarkPlugins, rehypePlugins } from "./markdownPlugins";
 import { Fragment, useEffect, useState } from "react";
 import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
@@ -352,7 +348,8 @@ function App() {
             </p>
             <ReactMarkdown 
               key={renderedMarkdown}
-              remarkPlugins={[slug, headings, gfm, emoji, simplePlantUML]}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
               children={renderedMarkdown}
             />
           </div>

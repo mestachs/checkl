@@ -3,11 +3,7 @@ import _ from "lodash";
 
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
-import gfm from "remark-gfm";
-import emoji from "remark-emoji";
-import slug from "remark-slug";
-import headings from "remark-autolink-headings";
-import simplePlantUML from "@akebifiky/remark-simple-plantuml";
+import { remarkPlugins, rehypePlugins } from "./markdownPlugins";
 import { useEffect } from "react";
 import TableOfContents from "./TableOfContent";
 import hljs from "highlight.js/lib/common";
@@ -188,7 +184,8 @@ const GithubRepo = (props) => {
               <br></br>
               <ReactMarkdown
                 key={query.data.content}
-                remarkPlugins={[slug, headings, gfm, emoji, simplePlantUML]}
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
                 children={query.data.content}
               />
             </div>
