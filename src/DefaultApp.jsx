@@ -5,6 +5,7 @@ import { remarkPlugins, rehypePlugins } from "./markdownPlugins";
 import { Fragment, useEffect, useState } from "react";
 import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
+import { FrontMatter, splitFrontMatter } from "./frontMatter";
 const Form = JSONSchemaForm;
 
 Handlebars.registerHelper({
@@ -234,6 +235,9 @@ function App() {
     window.mermaid.run({ querySelector: ".language-mermaid" }).catch(console.error);
   }, [renderedMarkdown]);
 
+  const { fields: frontMatter, content: markdownContent } =
+    splitFrontMatter(renderedMarkdown);
+
   return (
     <div className="App">
       <div id="edit" className="main">
@@ -346,11 +350,12 @@ function App() {
               Source :{" "}
               <ExternalLink href={markdownUrl}>{markdownUrl}</ExternalLink>
             </p>
+            <FrontMatter fields={frontMatter} />
             <ReactMarkdown 
               key={renderedMarkdown}
               remarkPlugins={remarkPlugins}
               rehypePlugins={rehypePlugins}
-              children={renderedMarkdown}
+              children={markdownContent}
             />
           </div>
         </div>

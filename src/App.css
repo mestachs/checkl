@@ -153,6 +153,11 @@ table, td, th {
   border-color: grey;
 }
 
+table.front-matter td:first-child {
+  white-space: nowrap;
+  vertical-align: top;
+}
+
 nav {
   width: 320px;
   min-width: 220px;
