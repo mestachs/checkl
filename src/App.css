@@ -57,6 +57,12 @@ h3:before {
   counter-increment: h3counter;
 }
 
+body.manual-numbering h1:before,
+body.manual-numbering h2:before,
+body.manual-numbering h3:before {
+  content: none;
+}
+
 .checklist.rw {
   max-height: 87vh;
   overflow-y: scroll;

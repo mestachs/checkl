@@ -49,15 +49,25 @@ const useHeadingsData = () => {
       document.querySelectorAll("body h1, body h2, body h3")
     );
 
+    // Markdown already numbers its headings: disable the css auto numbering
+    const manualNumbering = hasManualNumbering(headingElements);
+    document.body.classList.toggle("manual-numbering", manualNumbering);
+
     // Created a list of headings, with H3s nested
-    const newNestedHeadings = getNestedHeadings(headingElements);
+    const newNestedHeadings = getNestedHeadings(headingElements, manualNumbering);
     setNestedHeadings(newNestedHeadings);
   }, []);
 
   return { nestedHeadings };
 };
 
-const getNestedHeadings = (headingElements) => {
+// "1. Title", "1) Title", "1.2 Title", "1.2.3. Title" (but not "2024 roadmap")
+const MANUAL_NUMBERING = /^\s*(\d+[.)]|\d+(\.\d+)+\.?)\s/;
+
+export const hasManualNumbering = (headingElements) =>
+  headingElements.some((heading) => MANUAL_NUMBERING.test(heading.innerText));
+
+const getNestedHeadings = (headingElements, manualNumbering) => {
   const nestedHeadings = [];
 
   const counters = { h1: 0, h2: 0, h3: 0 };
@@ -71,7 +81,7 @@ const getNestedHeadings = (headingElements) => {
       counters.h3 = 0;
       nestedHeadings.push({
         id,
-        title: counters.h1 + ". " + title,
+        title: manualNumbering ? title : counters.h1 + ". " + title,
         items: [],
       });
     }
@@ -82,7 +92,9 @@ const getNestedHeadings = (headingElements) => {
 
       nestedHeadings[nestedHeadings.length - 1].items.push({
         id,
-        title: counters.h1 + "." + counters.h2 + " " + title,
+        title: manualNumbering
+          ? title
+          : counters.h1 + "." + counters.h2 + " " + title,
       });
     }
 
@@ -90,8 +102,9 @@ const getNestedHeadings = (headingElements) => {
       counters.h3 = counters.h3 + 1;
       nestedHeadings[nestedHeadings.length - 1].items.push({
         id,
-        title:
-          counters.h1 + "." + counters.h2 + "." + counters.h3 + " " + title,
+        title: manualNumbering
+          ? title
+          : counters.h1 + "." + counters.h2 + "." + counters.h3 + " " + title,
       });
     }
   });
