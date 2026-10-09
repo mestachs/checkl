@@ -9,7 +9,17 @@
     <link rel="apple-touch-icon" href="./logo192.png" />
     <link rel="manifest" href="./manifest.json" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/default.min.css">
+    <link id="hljs-theme" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github-dark-dimmed.min.css">
+    <script>
+      // apply the saved theme before first paint (see src/theme.jsx)
+      try {
+        if (localStorage.getItem("checkl-theme") === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+          document.getElementById("hljs-theme").href =
+            "//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css";
+        }
+      } catch (ignore) {}
+    </script>
     <title>Checkl - your dynamic checklist</title>
   </head>
   <body >

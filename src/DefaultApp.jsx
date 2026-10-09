@@ -6,6 +6,7 @@ import { Fragment, useEffect, useState } from "react";
 import JSONSchemaForm from "@rjsf/core";
 import TableOfContents from "./TableOfContent";
 import { FrontMatter, splitFrontMatter } from "./frontMatter";
+import { ThemeToggle } from "./theme";
 const Form = JSONSchemaForm;
 
 Handlebars.registerHelper({
@@ -215,7 +216,6 @@ function App() {
     loadData();
   }, []);
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "dark")
     try {
       const template = Handlebars.compile(markdownTemplate);
       setRenderedMarkdown(template(markdownParams));
@@ -290,6 +290,7 @@ function App() {
               >
                 Toggle to {mode == "rw" ? "r" : "rw"}
               </button>
+              <ThemeToggle style={{ marginLeft: "20px" }} />
             </p>
           </div>
           {paramsSchema && (
